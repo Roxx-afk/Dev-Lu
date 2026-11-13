@@ -74,7 +74,7 @@ export const EMOTES = Object.freeze(['👍', '😂', '😮', '😡', '🎉', '�
 /** Animation timing contract shared by server (bot pacing) and client (animations). */
 export const TIMING = Object.freeze({
   DICE_MS: 750,
-  STEP_MS: 170,
+  STEP_MS: 280,
   CAPTURE_MS: 650,
   EVENT_GAP_MS: 120,
 });

@@ -42,7 +42,7 @@
 .tokens { position: absolute; inset: 0; }
 .token {
   --c: var(--red); --c2: var(--red-dark);
-  --size: calc(100% / 15 * 0.92);
+  --size: calc(100% / 15 * 1.08);
   position: absolute; width: var(--size); height: var(--size);
   left: 0; top: 0;
   transform: translate(-50%, -50%) translate(var(--dx, 0px), var(--dy, 0px)) scale(var(--s, 1));
