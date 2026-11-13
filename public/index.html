@@ -1,0 +1,206 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="theme-color" content="#14122b" />
+  <meta name="description" content="Play real-time multiplayer Ludo with friends — Classic, Team and Quick modes." />
+  <title>Ludo Royale</title>
+  <link rel="icon" href="assets/favicon.svg" type="image/svg+xml" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;700;800&family=Nunito:wght@400;600;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/base.css" />
+  <link rel="stylesheet" href="css/home.css" />
+  <link rel="stylesheet" href="css/lobby.css" />
+  <link rel="stylesheet" href="css/game.css" />
+  <link rel="stylesheet" href="css/board.css" />
+  <link rel="stylesheet" href="css/dice.css" />
+  <link rel="stylesheet" href="css/animations.css" />
+</head>
+<body>
+  <div class="bg-orbs" aria-hidden="true"><span></span><span></span><span></span></div>
+
+  <header class="topbar">
+    <a class="brand" href="/" data-action="home" aria-label="Ludo Royale home">
+      <span class="brand__dice" aria-hidden="true">⚄</span>
+      <span class="brand__name">Ludo<b>Royale</b></span>
+    </a>
+    <div class="topbar__right">
+      <span class="conn" data-conn="connecting" title="Connection"><i></i><span class="conn__label">Connecting…</span></span>
+      <button class="btn btn--exit btn--sm" data-action="exit" id="exit-btn" hidden aria-label="Exit to home">
+        <span aria-hidden="true">⏻</span><span class="exit-label">Exit</span>
+      </button>
+      <button class="icon-btn" data-action="rules" aria-label="Rules" title="Rules">?</button>
+      <button class="icon-btn" data-action="sound" aria-label="Toggle sound" title="Sound">🔊</button>
+    </div>
+  </header>
+
+  <main id="app">
+    <!-- HOME -->
+    <section class="screen screen--home" data-screen="home">
+      <div class="hero">
+        <h1 class="hero__title">Roll. Race. <span>Capture.</span></h1>
+        <p class="hero__sub">Real-time multiplayer Ludo with the original rules. Invite friends or fill seats with bots.</p>
+      </div>
+
+      <div class="card home-card">
+        <label class="field">
+          <span class="field__label">Your name</span>
+          <input id="name-input" class="input" maxlength="16" autocomplete="nickname" placeholder="Enter a nickname" />
+        </label>
+
+        <div class="field">
+          <span class="field__label">Game mode</span>
+          <div class="mode-grid" id="mode-grid" role="radiogroup" aria-label="Game mode"></div>
+        </div>
+
+        <div class="home-actions">
+          <button class="btn btn--primary btn--lg" data-action="create">Create room</button>
+          <button class="btn btn--ghost btn--lg" data-action="solo">Play vs bots</button>
+        </div>
+
+        <div class="divider"><span>or join a friend</span></div>
+
+        <form class="join-row" id="join-form" autocomplete="off">
+          <input id="code-input" class="input input--code" maxlength="5" placeholder="ROOM CODE" aria-label="Room code" />
+          <button class="btn btn--accent" type="submit">Join</button>
+        </form>
+      </div>
+    </section>
+
+    <!-- LOBBY -->
+    <section class="screen screen--lobby" data-screen="lobby" hidden>
+      <div class="card lobby-card">
+        <div class="lobby-head">
+          <div>
+            <span class="field__label">Room code</span>
+            <div class="room-code" id="lobby-code">-----</div>
+          </div>
+          <div class="lobby-head__actions">
+            <button class="btn btn--ghost btn--sm" data-action="copy-link">🔗 Copy invite</button>
+          </div>
+        </div>
+
+        <div class="field">
+          <span class="field__label">Mode <small id="lobby-mode-hint"></small></span>
+          <div class="mode-tabs" id="lobby-modes" role="tablist"></div>
+          <p class="mode-desc" id="lobby-mode-desc"></p>
+        </div>
+
+        <label class="option-row" id="blocks-option">
+          <span class="option-row__text">
+            <b>Blockade rule</b>
+            <small>Two tokens of one colour on a square block opponents from passing or landing. Off = pairs can be passed and captured.</small>
+          </span>
+          <input type="checkbox" class="switch" id="blocks-toggle" />
+        </label>
+
+        <div class="seats" id="seats"></div>
+
+        <div class="lobby-foot">
+          <p class="lobby-status" id="lobby-status"></p>
+          <button class="btn btn--primary btn--lg" data-action="start" id="start-btn">Start game</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- GAME -->
+    <section class="screen screen--game" data-screen="game" hidden>
+      <div class="game">
+        <div class="game__row game__row--top">
+          <div class="panel-slot" data-corner="0"></div>
+          <div class="game__info" id="game-info"></div>
+          <div class="panel-slot" data-corner="1"></div>
+        </div>
+
+        <div class="board-wrap">
+          <div class="board" id="board">
+            <div class="board__rotor" id="board-rotor">
+              <svg class="board__svg" id="board-svg" viewBox="0 0 15 15" aria-label="Ludo board" role="img"></svg>
+              <div class="tokens" id="tokens"></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="game__row game__row--bottom">
+          <div class="panel-slot" data-corner="3"></div>
+          <div class="emote-bar" id="emote-bar"></div>
+          <div class="panel-slot" data-corner="2"></div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- Results -->
+  <div class="modal" id="results-modal" hidden>
+    <div class="modal__card card results">
+      <div class="results__trophy" aria-hidden="true">🏆</div>
+      <h2 class="results__title" id="results-title">Game over</h2>
+      <ol class="results__list" id="results-list"></ol>
+      <div class="results__actions">
+        <button class="btn btn--primary" data-action="rematch" id="rematch-btn">Play again</button>
+        <button class="btn btn--ghost" data-action="to-lobby">Back to lobby</button>
+        <button class="btn btn--ghost" data-action="to-home">Exit to home</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Exit confirmation -->
+  <div class="modal" id="exit-modal" hidden role="alertdialog" aria-modal="true" aria-labelledby="exit-title">
+    <div class="modal__card card confirm">
+      <div class="confirm__icon" aria-hidden="true">🚪</div>
+      <h2 id="exit-title">Are you sure you want to exit?</h2>
+      <p class="confirm__text" id="exit-text">You’ll go back to the home page.</p>
+      <div class="confirm__actions">
+        <button class="btn btn--ghost btn--lg" data-action="exit-no">No</button>
+        <button class="btn btn--danger btn--lg" data-action="exit-yes">Yes</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Seat swap request -->
+  <div class="modal" id="swap-modal" hidden role="alertdialog" aria-modal="true" aria-labelledby="swap-title">
+    <div class="modal__card card confirm">
+      <div class="confirm__icon" aria-hidden="true">⇄</div>
+      <h2 id="swap-title">Swap seats?</h2>
+      <p class="confirm__text" id="swap-text"></p>
+      <div class="confirm__actions">
+        <button class="btn btn--ghost btn--lg" data-action="swap-no">Decline</button>
+        <button class="btn btn--primary btn--lg" data-action="swap-yes">Accept</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Rules -->
+  <div class="modal" id="rules-modal" hidden>
+    <div class="modal__card card rules">
+      <button class="icon-btn modal__close" data-action="close-modal" aria-label="Close">✕</button>
+      <h2>Original Ludo rules</h2>
+      <ul>
+        <li>Each player has 4 tokens in their yard. Roll a <b>6</b> to bring a token out onto your start square.</li>
+        <li>Tokens travel clockwise once around the board, then up your coloured home column into the centre.</li>
+        <li>You need the <b>exact</b> number to reach home.</li>
+        <li>Rolling a <b>6</b> gives you another roll. Three 6s in a row and your turn is forfeited.</li>
+        <li>Land on a single opponent token to <b>capture</b> it — it goes back to its yard and you roll again.</li>
+        <li>Getting a token home also earns another roll.</li>
+        <li><b>Safe squares</b> (★ stars and coloured start squares) can’t be captured on.</li>
+        <li><b>Blockade rule (optional, host’s choice):</b> two tokens of one colour on a square form a block that opponents can’t pass or land on. It comes from the traditional Parcheesi-style rules, but many popular Ludo rule sets leave it out, so it’s off by default.</li>
+        <li>The dice are fair for everyone. Every roll comes from the server’s secure random generator, bots use the same dice, and the first player is chosen at random.</li>
+        <li>If you can’t move, your turn passes.</li>
+      </ul>
+      <h3>Modes</h3>
+      <ul>
+        <li><b>Classic</b> — 2–4 players, play until every place is decided.</li>
+        <li><b>Team</b> — Team A (Red &amp; Yellow) vs Team B (Green &amp; Blue). Pick your team in the lobby with “Join Team A/B”. No capturing your partner. Once all your tokens are home, you keep rolling on your turn and move your partner’s tokens.</li>
+        <li><b>Quick</b> — one token starts on the board, first to get 2 tokens home wins, 15s turns.</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="toasts" id="toasts" aria-live="polite"></div>
+  <canvas class="confetti" id="confetti" aria-hidden="true"></canvas>
+
+  <script type="module" src="js/main.js"></script>
+</body>
+</html>
