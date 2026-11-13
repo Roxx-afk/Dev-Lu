@@ -66,7 +66,7 @@ export class TokenLayer extends Emitter {
             tabindex: '-1',
             'aria-label': `${p.color} token ${i + 1}`,
             dataset: { color: p.color, index: String(i) },
-          }, h('span', { class: 'token__body' }));
+          }, h('span', { class: 'token__body' }, h('span', { class: 'token__pin' })));
           this.el.append(el);
           this.tokens.set(k, el);
         }

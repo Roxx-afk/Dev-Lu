@@ -1,9 +1,9 @@
 /* ============ Board ============ */
 .board {
   width: var(--board-size); height: var(--board-size);
-  position: relative; border-radius: 22px; padding: calc(var(--board-size) * 0.02);
-  background: linear-gradient(145deg, #fdfcf7, #e9e5d6);
-  box-shadow: 0 30px 60px rgba(0, 0, 0, 0.45), inset 0 0 0 6px #ffffff, inset 0 0 0 8px rgba(0, 0, 0, 0.08);
+  position: relative; border-radius: 14px; padding: calc(var(--board-size) * 0.02);
+  background: #ffffff;
+  box-shadow: 0 30px 60px rgba(0, 0, 0, 0.45), inset 0 0 0 4px #e9eef5;
 }
 .board.is-shaking { animation: board-shake 0.45s ease; }
 .board__rotor {
@@ -14,31 +14,35 @@
 .board__svg { position: absolute; inset: 0; width: 100%; height: 100%; display: block; overflow: visible; }
 
 /* SVG parts */
-.cell { fill: #ffffff; stroke: #cfc9b6; stroke-width: 0.03; }
+.cell { fill: #ffffff; stroke: #a9b2bf; stroke-width: 0.035; }
 .cell--red, .yard--red, .tri--red { fill: var(--red); }
 .cell--green, .yard--green, .tri--green { fill: var(--green); }
 .cell--yellow, .yard--yellow, .tri--yellow { fill: var(--yellow); }
 .cell--blue, .yard--blue, .tri--blue { fill: var(--blue); }
-.yard { stroke: rgba(0, 0, 0, 0.12); stroke-width: 0.04; }
-.yard-inner { fill: #fffdf6; }
-.yard-spot { stroke-width: 0.08; fill: #fffdf6; }
-.yard-spot--red { stroke: var(--red); }
-.yard-spot--green { stroke: var(--green); }
-.yard-spot--yellow { stroke: var(--yellow); }
-.yard-spot--blue { stroke: var(--blue); }
-.tri { stroke: rgba(255, 255, 255, 0.6); stroke-width: 0.04; }
-.star { fill: rgba(0, 0, 0, 0.28); pointer-events: none; }
-.cell--red + .star, .cell--green + .star, .cell--yellow + .star, .cell--blue + .star { fill: rgba(255, 255, 255, 0.85); }
-.arrow { fill: none; stroke-width: 0.09; stroke-linecap: round; stroke-linejoin: round; opacity: 0.85; }
-.yard-glow { fill: none; stroke: #fff; stroke-width: 0.12; opacity: 0; }
+.yard { stroke: rgba(0, 0, 0, 0.18); stroke-width: 0.04; }
+.yard-inner { fill: #ffffff; stroke: rgba(0, 0, 0, 0.15); stroke-width: 0.04; }
+.yard-spot { stroke: rgba(0, 0, 0, 0.12); stroke-width: 0.04; }
+.yard-spot--red { fill: var(--red); }
+.yard-spot--green { fill: var(--green); }
+.yard-spot--yellow { fill: var(--yellow); }
+.yard-spot--blue { fill: var(--blue); }
+.tri { stroke: rgba(255, 255, 255, 0.9); stroke-width: 0.04; }
+/* Safe squares: outlined stars, like a printed board */
+.star { fill: #ffffff; stroke: #4a5361; stroke-width: 0.045; stroke-linejoin: round; pointer-events: none; }
+.star--on-color { fill: rgba(255, 255, 255, 0.9); stroke: rgba(0, 0, 0, 0.35); }
+.arrow path { fill: none; stroke-width: 0.08; stroke-linecap: round; stroke-linejoin: round; }
+.arrow--red path { stroke: var(--red); }
+.arrow--green path { stroke: var(--green); }
+.arrow--yellow path { stroke: var(--yellow-dark); }
+.arrow--blue path { stroke: var(--blue); }
+.yard-glow { fill: none; stroke: #fff; stroke-width: 0.14; opacity: 0; }
 .yard-glow.is-active { animation: yard-glow 1.6s ease-in-out infinite; }
-.center-ring { fill: none; stroke: rgba(255,255,255,0.8); stroke-width: 0.05; }
 
-/* ============ Tokens ============ */
+/* ============ Tokens (map-pin pieces) ============ */
 .tokens { position: absolute; inset: 0; }
 .token {
   --c: var(--red); --c2: var(--red-dark);
-  --size: calc(100% / 15 * 0.8);
+  --size: calc(100% / 15 * 0.92);
   position: absolute; width: var(--size); height: var(--size);
   left: 0; top: 0;
   transform: translate(-50%, -50%) translate(var(--dx, 0px), var(--dy, 0px)) scale(var(--s, 1));
@@ -50,31 +54,45 @@
 .token[data-color='yellow'] { --c: var(--yellow); --c2: var(--yellow-dark); }
 .token[data-color='blue'] { --c: var(--blue); --c2: var(--blue-dark); }
 
-.token__body {
-  position: absolute; inset: 0; border-radius: 50%;
-  background: radial-gradient(circle at 35% 30%, rgba(255,255,255,0.85) 0 12%, transparent 13%),
-              radial-gradient(circle at 50% 50%, var(--c) 0 55%, var(--c2) 56% 100%);
-  border: 2px solid #fff;
-  box-shadow: 0 3px 0 var(--c2), 0 5px 8px rgba(0, 0, 0, 0.35);
-  transform: rotate(var(--counter-rot, 0deg));
+/* Upright wrapper: cancels the board rotation so pins always stand up on screen */
+.token__body { position: absolute; inset: 0; transform: rotate(var(--counter-rot, 0deg)); }
+/* Ground ring where the pin's tip touches the square */
+.token__body::before {
+  content: ''; position: absolute; left: 50%; top: 58%; width: 62%; height: 28%;
+  transform: translate(-50%, -50%); border-radius: 50%;
+  border: 2px solid color-mix(in srgb, var(--c2) 75%, #000); background: rgba(0, 0, 0, 0.18);
 }
-.token__body::after {
-  content: ''; position: absolute; inset: 26%; border-radius: 50%;
-  background: rgba(255, 255, 255, 0.25); border: 1.5px solid rgba(255, 255, 255, 0.6);
+.token__pin { position: absolute; inset: 0; transform-origin: 50% 58%; }
+/* White teardrop */
+.token__pin::before {
+  content: ''; position: absolute; left: 50%; top: 50%; width: 80%; height: 80%;
+  transform: translate(-50%, -50%) translateY(-60%) rotate(-45deg);
+  border-radius: 50% 50% 50% 0;
+  background: linear-gradient(135deg, #ffffff 30%, #d9dee6);
+  box-shadow: inset 0 0 0 1.5px rgba(0, 0, 0, 0.18), -2px 3px 5px rgba(0, 0, 0, 0.35);
+}
+/* Coloured ball in the pin head */
+.token__pin::after {
+  content: ''; position: absolute; left: 50%; top: 2%; width: 54%; height: 54%;
+  transform: translate(-50%, -50%); border-radius: 50%;
+  background: radial-gradient(circle at 38% 32%, rgba(255, 255, 255, 0.85) 0 14%, transparent 16%),
+              radial-gradient(circle at 50% 50%, var(--c) 0 58%, var(--c2) 100%);
+  box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.2);
 }
 .token.is-moving { z-index: 6; }
-.token.is-moving .token__body { animation: hop var(--move-ms, 160ms) ease-out; }
+.token.is-moving .token__pin { animation: hop var(--move-ms, 160ms) ease-out; }
 .token.is-movable { cursor: pointer; z-index: 5; }
-.token.is-movable::before {
-  content: ''; position: absolute; inset: -22%; border-radius: 50%;
-  border: 3px dashed #fff; box-shadow: 0 0 12px var(--c);
+.token.is-movable .token__body::after {
+  content: ''; position: absolute; left: 50%; top: 58%; width: 96%; height: 96%;
+  translate: -50% -50%; border-radius: 50%;
+  border: 3px dashed #fff; box-shadow: 0 0 10px var(--c), inset 0 0 8px var(--c);
   animation: spin 3s linear infinite, pulse-ring 1s ease-in-out infinite alternate;
 }
-.token.is-movable .token__body { animation: token-bob 0.8s ease-in-out infinite alternate; }
-.token.is-movable:hover .token__body, .token.is-movable:focus-visible .token__body { filter: brightness(1.15); }
+.token.is-movable .token__pin { animation: token-bob 0.8s ease-in-out infinite alternate; }
+.token.is-movable:hover .token__pin, .token.is-movable:focus-visible .token__pin { filter: brightness(1.12); }
 .token:focus-visible { outline: none; }
-.token.is-captured .token__body { animation: captured 0.6s ease; }
-.token.is-home .token__body { animation: home-pop 0.6s var(--ease-bounce); }
+.token.is-captured .token__pin { animation: captured 0.6s ease; }
+.token.is-home .token__pin { animation: home-pop 0.6s var(--ease-bounce); }
 
 /* Effects layer (not rotated, so labels stay upright) */
 .fx-layer { position: absolute; inset: calc(var(--board-size) * 0.02); pointer-events: none; z-index: 10; }

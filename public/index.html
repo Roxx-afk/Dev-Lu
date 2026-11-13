@@ -31,6 +31,7 @@
       <button class="btn btn--exit btn--sm" data-action="exit" id="exit-btn" hidden aria-label="Exit to home">
         <span aria-hidden="true">⏻</span><span class="exit-label">Exit</span>
       </button>
+      <button class="icon-btn" data-action="stats" id="stats-btn" hidden aria-label="Dice stats" title="Dice stats — proof the dice are fair">📊</button>
       <button class="icon-btn" data-action="rules" aria-label="Rules" title="Rules">?</button>
       <button class="icon-btn" data-action="sound" aria-label="Toggle sound" title="Sound">🔊</button>
     </div>
@@ -141,6 +142,7 @@
       <div class="results__actions">
         <button class="btn btn--primary" data-action="rematch" id="rematch-btn">Play again</button>
         <button class="btn btn--ghost" data-action="to-lobby">Back to lobby</button>
+        <button class="btn btn--ghost" data-action="stats">📊 Dice stats</button>
         <button class="btn btn--ghost" data-action="to-home">Exit to home</button>
       </div>
     </div>
@@ -169,6 +171,16 @@
         <button class="btn btn--ghost btn--lg" data-action="swap-no">Decline</button>
         <button class="btn btn--primary btn--lg" data-action="swap-yes">Accept</button>
       </div>
+    </div>
+  </div>
+
+  <!-- Dice stats -->
+  <div class="modal" id="stats-modal" hidden>
+    <div class="modal__card card stats">
+      <button class="icon-btn modal__close" data-action="close-modal" aria-label="Close">✕</button>
+      <h2>Dice stats</h2>
+      <p class="stats__intro">Every roll — yours, your friends’ and the bots’ — comes from the same secure random generator on the server. Nobody’s dice are weighted. Here’s every roll this game:</p>
+      <div id="stats-body"></div>
     </div>
   </div>
 

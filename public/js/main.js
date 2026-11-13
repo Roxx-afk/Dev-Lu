@@ -44,6 +44,7 @@ class App {
     if (this.screen === screen) return;
     this.screen = screen;
     for (const el of document.querySelectorAll('[data-screen]')) el.hidden = el.dataset.screen !== screen;
+    $('#stats-btn').hidden = screen !== 'game';
     window.scrollTo({ top: 0 });
   }
 
@@ -182,6 +183,9 @@ class App {
           this.hideModal('exit-modal');
           this.exitToHome();
           break;
+        case 'stats':
+          this.showStats();
+          break;
         case 'rules':
           this.showModal('rules-modal');
           break;
@@ -217,6 +221,7 @@ class App {
       if (e.key === 'Escape') {
         this.hideModal('rules-modal');
         this.hideModal('exit-modal');
+        this.hideModal('stats-modal');
       }
     });
     $('[data-action="sound"]').textContent = sound.enabled ? '🔊' : '🔇';
@@ -284,6 +289,43 @@ class App {
     } catch {
       prompt('Copy this invite link:', link);
     }
+  }
+
+  /** Show how often each face came up for every player, so anyone can see the dice are fair. */
+  showStats() {
+    const state = this.game.state;
+    if (!state) return;
+    const pct = (n, d) => (d ? `${((n / d) * 100).toFixed(1)}%` : '—');
+    const total = [0, 0, 0, 0, 0, 0];
+    const rows = state.players.map((p) => {
+      const rolls = p.rolls ?? [0, 0, 0, 0, 0, 0];
+      rolls.forEach((n, i) => { total[i] += n; });
+      return this.statsRow(p.name + (p.id === this.me ? ' (you)' : ''), p.color, rolls, pct);
+    });
+    const all = total.reduce((a, b) => a + b, 0);
+    $('#stats-body').replaceChildren(
+      ...rows,
+      this.statsRow('All players', null, total, pct),
+      h('p', { class: 'stats__note', text: all
+        ? `Over ${all} rolls, a 6 came up ${pct(total[5], all)} of the time. A fair die averages 16.7% for each face — short games naturally swing a few % either way, for everyone equally.`
+        : 'No rolls yet.' }),
+    );
+    this.showModal('stats-modal');
+  }
+
+  statsRow(name, color, rolls, pct) {
+    const n = rolls.reduce((a, b) => a + b, 0);
+    const max = Math.max(1, ...rolls);
+    return h('div', { class: `stats__row${color ? '' : ' stats__row--total'}`, dataset: { color: color ?? '' } },
+      h('div', { class: 'stats__head' },
+        h('span', { class: 'stats__dot' }),
+        h('b', { text: name }),
+        h('small', { text: `${n} roll${n === 1 ? '' : 's'} · 6s: ${rolls[5]} (${pct(rolls[5], n)})` })),
+      h('div', { class: 'stats__bars' }, rolls.map((c, i) =>
+        h('div', { class: 'stats__bar', title: `${i + 1}: ${c} (${pct(c, n)})` },
+          h('span', { class: 'stats__count', text: String(c) }),
+          h('i', { style: { height: `${(c / max) * 100}%` } }),
+          h('span', { class: 'stats__face', text: String(i + 1) })))));
   }
 
   showResults(state) {

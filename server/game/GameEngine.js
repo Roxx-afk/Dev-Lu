@@ -63,6 +63,7 @@ export class GameEngine {
           i < this.config.tokensStartOnBoard ? POS.START : POS.YARD,
         ),
         rank: null,
+        rolls: [0, 0, 0, 0, 0, 0], // how often each face came up, shown to players as proof of fair dice
       }));
 
     if (this.config.teams) {
@@ -232,6 +233,7 @@ export class GameEngine {
     const value = forced ?? this.rollDie();
     const player = this.current;
     const events = [{ type: EVT.ROLL, color: player.color, value }];
+    player.rolls[value - 1] += 1;
 
     this.dice = value;
     this.sixCount = value === 6 ? this.sixCount + 1 : 0;
@@ -390,6 +392,7 @@ export class GameEngine {
         tokens: p.tokens.slice(),
         rank: p.rank,
         home: this.homeCount(p),
+        rolls: p.rolls.slice(),
       })),
       turn: this.current.color,
       controlledColor: controlled?.color ?? null,

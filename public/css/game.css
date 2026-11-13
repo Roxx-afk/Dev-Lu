@@ -203,3 +203,26 @@
 @media (max-width: 600px) {
   .panel__partner { max-width: 70px; font-size: 10px; }
 }
+
+/* ============ Dice stats ============ */
+.stats h2 { margin: 0 0 6px; }
+.stats__intro, .stats__note { color: var(--muted); font-size: 13px; line-height: 1.5; margin: 0 0 14px; }
+.stats__note { margin: 4px 0 0; }
+.stats__row {
+  --c: var(--muted);
+  padding: 10px 12px; border-radius: var(--radius-sm); margin-bottom: 8px;
+  background: color-mix(in srgb, var(--c) 14%, rgba(0, 0, 0, 0.2)); border-left: 4px solid var(--c);
+}
+.stats__row[data-color='red'] { --c: var(--red); }
+.stats__row[data-color='green'] { --c: var(--green); }
+.stats__row[data-color='yellow'] { --c: var(--yellow); }
+.stats__row[data-color='blue'] { --c: var(--blue); }
+.stats__row--total { --c: #ffffff; }
+.stats__head { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin-bottom: 8px; }
+.stats__head small { color: var(--muted); margin-left: auto; font-size: 12px; }
+.stats__dot { width: 12px; height: 12px; border-radius: 50%; background: var(--c); flex: none; }
+.stats__bars { display: grid; grid-template-columns: repeat(6, 1fr); gap: 6px; height: 74px; }
+.stats__bar { display: flex; flex-direction: column; align-items: center; justify-content: flex-end; gap: 2px; min-width: 0; }
+.stats__bar i { display: block; width: 70%; min-height: 2px; border-radius: 4px 4px 0 0; background: var(--c); transition: height 0.5s var(--ease-bounce); }
+.stats__count { font-size: 11px; color: var(--muted); font-weight: 700; }
+.stats__face { font-size: 12px; font-weight: 800; }
